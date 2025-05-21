@@ -91,11 +91,11 @@ function createShadowDomMenu() {
         position: fixed;
         background-color: white;
         border: 1px solid #ccc;
-        border-radius: 4px;
+        border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-        min-width: 160px;
+        min-width: 180px;
         z-index: 999999999;
-        padding: 8px 0;
+        padding: 6px 0;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       }
       .dbwm-menu-item {
@@ -103,11 +103,25 @@ function createShadowDomMenu() {
         cursor: pointer;
         font-size: 15px;
         color: #333;
-        display: block;
+        display: flex;
+        align-items: center;
+        transition: background-color 0.2s;
       }
       .dbwm-menu-item:hover {
         background-color: #f5f5f5;
         color: #1890ff;
+      }
+      .dbwm-menu-item svg {
+        margin-right: 10px;
+        flex-shrink: 0;
+      }
+      .dbwm-menu-item-text {
+        flex-grow: 1;
+      }
+      .dbwm-menu-divider {
+        height: 1px;
+        background-color: #eee;
+        margin: 4px 0;
       }
     `;
     shadowRoot.appendChild(style);
@@ -120,7 +134,13 @@ function createShadowDomMenu() {
     // 创建无水印复制按钮
     const copyButton = document.createElement('div');
     copyButton.className = 'dbwm-menu-item';
-    copyButton.textContent = '无水印复制';
+    copyButton.innerHTML = `
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 4H18C18.5304 4 19.0391 4.21071 19.4142 4.58579C19.7893 4.96086 20 5.46957 20 6V20C20 20.5304 19.7893 21.0391 19.4142 21.4142C19.0391 21.7893 18.5304 22 18 22H6C5.46957 22 4.96086 21.7893 4.58579 21.4142C4.21071 21.0391 4 20.5304 4 20V6C4 5.46957 4.21071 4.96086 4.58579 4.58579C4.96086 4.21071 5.46957 4 6 4H8" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M15 2H9C8.44772 2 8 2.44772 8 3V5C8 5.55228 8.44772 6 9 6H15C15.5523 6 16 5.55228 16 5V3C16 2.44772 15.5523 2 15 2Z" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="dbwm-menu-item-text">无水印复制</span>
+    `;
     copyButton.addEventListener('click', () => {
       log('点击了复制按钮');
       copyImageWithoutWatermark();
@@ -129,7 +149,14 @@ function createShadowDomMenu() {
     // 创建无水印下载按钮
     const downloadButton = document.createElement('div');
     downloadButton.className = 'dbwm-menu-item';
-    downloadButton.textContent = '无水印下载';
+    downloadButton.innerHTML = `
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M7 10L12 15L17 10" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 15V3" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="dbwm-menu-item-text">无水印下载</span>
+    `;
     downloadButton.addEventListener('click', () => {
       log('点击了下载按钮');
       downloadImageWithoutWatermark();
@@ -137,6 +164,10 @@ function createShadowDomMenu() {
     
     // 添加按钮到菜单
     customMenu.appendChild(copyButton);
+    // 添加分隔线
+    const divider = document.createElement('div');
+    divider.className = 'dbwm-menu-divider';
+    customMenu.appendChild(divider);
     customMenu.appendChild(downloadButton);
     shadowRoot.appendChild(customMenu);
     
