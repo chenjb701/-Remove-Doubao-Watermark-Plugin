@@ -285,31 +285,132 @@ async function copyImageWithoutWatermark() {
   }
 
   log('开始复制图片', imgUrl);
+  
   try {
-    log('正在获取图片数据...');
-    const response = await fetch(imgUrl);
-    if (!response.ok) {
-      throw new Error(`HTTP错误：${response.status} ${response.statusText}`);
-    }
-    log('图片数据获取成功，正在转换为Blob...');
-    const blob = await response.blob();
-    log('Blob创建成功', {
-      类型: blob.type,
-      大小: blob.size + ' 字节'
+    // 方法1：使用Canvas复制图片
+    log('使用Canvas复制图片');
+    
+    // 创建一个临时图片元素
+    const tempImg = new Image();
+    tempImg.crossOrigin = 'anonymous';
+    
+    // 等待图片加载完成
+    await new Promise((resolve, reject) => {
+      tempImg.onload = resolve;
+      tempImg.onerror = reject;
+      tempImg.src = imgUrl;
+      
+      // 设置超时，防止图片加载过长
+      setTimeout(resolve, 3000);
     });
     
-    // 复制图片到剪贴板
-    log('尝试复制到剪贴板...');
-    const item = new ClipboardItem({ [blob.type]: blob });
-    await navigator.clipboard.write([item]);
+    // 创建Canvas并绘制图片
+    const canvas = document.createElement('canvas');
+    canvas.width = tempImg.naturalWidth || tempImg.width;
+    canvas.height = tempImg.naturalHeight || tempImg.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(tempImg, 0, 0);
     
-    // 显示成功提示
-    log('图片成功复制到剪贴板');
-    showNotification('图片已复制到剪贴板');
+    // 将Canvas内容转换为Blob
+    canvas.toBlob(async (blob) => {
+      try {
+        // 使用Clipboard API复制Blob
+        const clipboardItem = new ClipboardItem({ [blob.type]: blob });
+        await navigator.clipboard.write([clipboardItem]);
+        
+        log('成功复制图片到剪贴板 (Clipboard API)');
+        showNotification('图片已复制到剪贴板');
+      } catch (clipError) {
+        logError('使用Clipboard API复制失败', clipError);
+        
+        // 备用方法：尝试使用execCommand
+        try {
+          // 将Canvas转为dataURL，可以用于创建img
+          const dataUrl = canvas.toDataURL('image/png');
+          const tempImg2 = document.createElement('img');
+          tempImg2.src = dataUrl;
+          tempImg2.style.position = 'fixed';
+          tempImg2.style.left = '-9999px';
+          tempImg2.style.top = '-9999px';
+          document.body.appendChild(tempImg2);
+          
+          // 创建Range和Selection
+          const range = document.createRange();
+          range.selectNode(tempImg2);
+          
+          // 清除当前选择，然后选择图片
+          window.getSelection().removeAllRanges();
+          window.getSelection().addRange(range);
+          
+          // 执行复制命令
+          const success = document.execCommand('copy');
+          
+          // 清理
+          window.getSelection().removeAllRanges();
+          document.body.removeChild(tempImg2);
+          
+          if (success) {
+            log('成功复制图片到剪贴板 (execCommand)');
+            showNotification('图片已复制到剪贴板');
+            return;
+          }
+          
+          // 如果前两种方法都失败，显示手动复制对话框
+          throw new Error('自动复制失败');
+        } catch (execError) {
+          logError('execCommand复制失败', execError);
+          showManualCopyDialog(imgUrl);
+        }
+      }
+    }, 'image/png');
   } catch (error) {
     logError('复制图片失败', error);
-    showNotification('复制图片失败，请重试', true);
+    showManualCopyDialog(imgUrl);
   }
+}
+
+// 显示手动复制帮助对话框
+function showManualCopyDialog(imgUrl) {
+  log('显示手动复制帮助对话框');
+  
+  // 显示复制提示对话框
+  const copyHelpDiv = document.createElement('div');
+  copyHelpDiv.style.position = 'fixed';
+  copyHelpDiv.style.top = '50%';
+  copyHelpDiv.style.left = '50%';
+  copyHelpDiv.style.transform = 'translate(-50%, -50%)';
+  copyHelpDiv.style.padding = '20px';
+  copyHelpDiv.style.backgroundColor = 'white';
+  copyHelpDiv.style.border = '1px solid #ccc';
+  copyHelpDiv.style.borderRadius = '5px';
+  copyHelpDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+  copyHelpDiv.style.zIndex = '9999999';
+  copyHelpDiv.style.fontFamily = 'sans-serif';
+  copyHelpDiv.style.fontSize = '14px';
+  copyHelpDiv.style.lineHeight = '1.5';
+  copyHelpDiv.style.maxWidth = '400px';
+  
+  copyHelpDiv.innerHTML = `
+    <div style="margin-bottom:15px;">由于浏览器安全限制，无法自动复制图片。请按以下步骤操作：</div>
+    <ol style="margin-left:20px;padding-left:0;">
+      <li style="margin-bottom:8px;">1. 右键点击下方图片</li>
+      <li style="margin-bottom:8px;">2. 选择"复制图片"选项</li>
+      <li>3. 完成后点击"关闭"按钮</li>
+    </ol>
+    <div style="text-align:center;margin:15px 0;">
+      <img src="${imgUrl}" style="max-width:100%;max-height:300px;border:1px solid #eee;">
+    </div>
+    <div style="text-align:center;">
+      <button id="dbwm-close-help" style="padding:8px 20px;background:#1890ff;color:white;border:none;border-radius:4px;cursor:pointer;">关闭</button>
+    </div>
+  `;
+  
+  document.body.appendChild(copyHelpDiv);
+  
+  // 添加关闭按钮事件
+  document.getElementById('dbwm-close-help').addEventListener('click', function() {
+    document.body.removeChild(copyHelpDiv);
+  });
 }
 
 // 下载无水印图片
