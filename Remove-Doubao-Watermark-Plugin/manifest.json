@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "豆包图片去水印下载器",
+  "version": "1.0",
+  "description": "从豆包网站下载预览状态的无水印图片。",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "downloads",
+    "cookies"
+  ],
+  "host_permissions": [
+    "https://www.doubao.com/*",
+    "https://*.byteimg.com/*"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  }
+} 
