@@ -1,13 +1,15 @@
 {
   "manifest_version": 3,
   "name": "豆包图片去水印下载器",
-  "version": "1.0",
-  "description": "从豆包网站下载预览状态的无水印图片。",
+  "version": "1.2",
+  "description": "从豆包网站下载预览状态的无水印图片，替换右键菜单。",
   "permissions": [
     "activeTab",
     "scripting",
     "downloads",
-    "cookies"
+    "cookies",
+    "contextMenus",
+    "clipboardWrite"
   ],
   "host_permissions": [
     "https://www.doubao.com/*",
@@ -25,5 +27,21 @@
     "16": "images/icon16.png",
     "48": "images/icon48.png",
     "128": "images/icon128.png"
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.doubao.com/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_start",
+      "all_frames": true,
+      "world": "MAIN"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["images/*"],
+      "matches": ["https://*.doubao.com/*"]
+    }
+  ]
 } 
