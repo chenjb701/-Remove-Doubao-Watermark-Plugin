@@ -87,41 +87,62 @@ function createShadowDomMenu() {
     // 添加样式
     const style = document.createElement('style');
     style.textContent = `
+      /* 右键菜单主容器 */
       .${MENU_CLASS} {
-        position: fixed;
-        background-color: white;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-        min-width: 180px;
-        z-index: 999999999;
-        padding: 6px 0;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        position: fixed;           /* 固定定位，不随滚动而移动 */
+        background-color: white;   /* 菜单背景色 */
+        border: 1px solid #ccc;    /* 菜单边框 */
+        border-radius: 8px;        /* 圆角边框 */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); /* 阴影效果 */
+        min-width: 150px;          /* 最小宽度 */
+        z-index: 999999999;        /* 确保显示在最上层 */
+        padding: 6px 0;            /* 上下内边距 */
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; /* 字体 */
+        box-sizing: border-box;    /* 盒模型计算方式 */
+        text-align: left;          /* 文本左对齐 */
       }
+      
+      /* 菜单项样式 */
       .dbwm-menu-item {
-        padding: 10px 18px;
-        cursor: pointer;
-        font-size: 15px;
-        color: #333;
-        display: flex;
-        align-items: center;
-        transition: background-color 0.2s;
+        padding: 6px 0;           /* 上下内边距 */
+        cursor: pointer;           /* 鼠标指针为手型 */
+        font-size: 15px;           /* 字体大小 */
+        color: #333;               /* 文字颜色 */
+        transition: background-color 0.2s; /* 背景色过渡动画 */
+        box-sizing: border-box;    /* 盒模型计算方式 */
+        width: 100%;               /* 宽度占满容器 */
       }
+      
+      /* 菜单项悬停效果 */
       .dbwm-menu-item:hover {
-        background-color: #f5f5f5;
-        color: #1890ff;
+        background-color: #f5f5f5; /* 悬停背景色 */
+        color: #1890ff;            /* 悬停文字颜色（蓝色） */
       }
+      
+      /* 菜单项内容容器 */
+      .dbwm-menu-item-container {
+        display: inline-flex;      /* 行内弹性布局 */
+        align-items: center;       /* 垂直居中对齐 */
+        width: auto;               /* 自动宽度 */
+        margin: 0 0 0 6px;        /* 左对齐(左边距6px) */
+      }
+      
+      /* 菜单项图标样式 */
       .dbwm-menu-item svg {
-        margin-right: 10px;
-        flex-shrink: 0;
+        margin-right: 10px;        /* 右侧外边距 */
+        flex-shrink: 0;            /* 防止图标被压缩 */
       }
+      
+      /* 菜单项文本样式 */
       .dbwm-menu-item-text {
-        flex-grow: 1;
+        white-space: nowrap;       /* 文本不换行 */
       }
+      
+      /* 菜单分隔线样式 */
       .dbwm-menu-divider {
-        height: 1px;
-        background-color: #eee;
-        margin: 4px 0;
+        height: 1px;               /* 分隔线高度 */
+        background-color: #eee;    /* 分隔线颜色 */
+        margin: 4px 0;             /* 上下外边距 */
       }
     `;
     shadowRoot.appendChild(style);
@@ -135,11 +156,13 @@ function createShadowDomMenu() {
     const copyButton = document.createElement('div');
     copyButton.className = 'dbwm-menu-item';
     copyButton.innerHTML = `
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M16 4H18C18.5304 4 19.0391 4.21071 19.4142 4.58579C19.7893 4.96086 20 5.46957 20 6V20C20 20.5304 19.7893 21.0391 19.4142 21.4142C19.0391 21.7893 18.5304 22 18 22H6C5.46957 22 4.96086 21.7893 4.58579 21.4142C4.21071 21.0391 4 20.5304 4 20V6C4 5.46957 4.21071 4.96086 4.58579 4.58579C4.96086 4.21071 5.46957 4 6 4H8" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M15 2H9C8.44772 2 8 2.44772 8 3V5C8 5.55228 8.44772 6 9 6H15C15.5523 6 16 5.55228 16 5V3C16 2.44772 15.5523 2 15 2Z" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <span class="dbwm-menu-item-text">无水印复制</span>
+      <div class="dbwm-menu-item-container" style="width: 130px; padding: 0 16px; box-sizing: border-box;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 8px;">
+          <path d="M16 4H18C18.5304 4 19.0391 4.21071 19.4142 4.58579C19.7893 4.96086 20 5.46957 20 6V20C20 20.5304 19.7893 21.0391 19.4142 21.4142C19.0391 21.7893 18.5304 22 18 22H6C5.46957 22 4.96086 21.7893 4.58579 21.4142C4.21071 21.0391 4 20.5304 4 20V6C4 5.46957 4.21071 4.96086 4.58579 4.58579C4.96086 4.21071 5.46957 4 6 4H8" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M15 2H9C8.44772 2 8 2.44772 8 3V5C8 5.55228 8.44772 6 9 6H15C15.5523 6 16 5.55228 16 5V3C16 2.44772 15.5523 2 15 2Z" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="dbwm-menu-item-text">无水印复制</span>
+      </div>
     `;
     copyButton.addEventListener('click', () => {
       log('点击了复制按钮');
@@ -150,12 +173,14 @@ function createShadowDomMenu() {
     const downloadButton = document.createElement('div');
     downloadButton.className = 'dbwm-menu-item';
     downloadButton.innerHTML = `
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M7 10L12 15L17 10" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M12 15V3" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <span class="dbwm-menu-item-text">无水印下载</span>
+      <div class="dbwm-menu-item-container" style="width: 130px; padding: 0 16px; box-sizing: border-box;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right: 8px;">
+          <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M7 10L12 15L17 10" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 15V3" stroke="#2C2C2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="dbwm-menu-item-text">无水印下载</span>
+      </div>
     `;
     downloadButton.addEventListener('click', () => {
       log('点击了下载按钮');
@@ -236,35 +261,6 @@ function hideCustomMenu() {
     customMenu.style.display = 'none';
     log('菜单已隐藏');
   }
-}
-
-// 测试创建一个简单的通知
-function testNotification() {
-  log('测试创建通知');
-  
-  // 创建简单通知
-  const notification = document.createElement('div');
-  notification.style.position = 'fixed';
-  notification.style.top = '20px';
-  notification.style.right = '20px';
-  notification.style.backgroundColor = 'green';
-  notification.style.color = 'white';
-  notification.style.padding = '10px 15px';
-  notification.style.borderRadius = '4px';
-  notification.style.zIndex = '999999999';
-  notification.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
-  notification.style.fontFamily = 'Arial, sans-serif';
-  notification.textContent = '测试通知 - 如果你能看到，说明DOM操作正常';
-  
-  document.body.appendChild(notification);
-  log('测试通知已添加到DOM');
-  
-  setTimeout(() => {
-    if (document.body.contains(notification)) {
-      document.body.removeChild(notification);
-      log('测试通知已移除');
-    }
-  }, 3000);
 }
 
 // 从图片元素获取无水印图片URL
@@ -838,7 +834,7 @@ function init() {
   });
   
   // 测试创建通知
-  setTimeout(testNotification, 2000);
+  // setTimeout(testNotification, 2000);
   
   // 禁用豆包网站的原生右键菜单
   disableDoubaoContextMenu();
