@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "豆包无水印复制下载工具",
   "version": "1.2",
-  "description": "从豆包网站下载预览状态的无水印图片，替换右键菜单。",
+  "description": "豆包无水印插件是一款Chrome扩展，通过右键菜单让用户轻松获取豆包网站上的无水印图片。支持一键复制或下载图片，无需手动处理水印。方便设计师、创作者和一般用户获取高质量原始图片资源。",
   "permissions": [
     "activeTab",
     "scripting",
